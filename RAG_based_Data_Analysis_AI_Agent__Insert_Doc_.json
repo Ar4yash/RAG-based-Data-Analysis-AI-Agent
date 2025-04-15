@@ -1,0 +1,179 @@
+{
+  "name": "RAG based Data Analysis AI Agent (Insert Doc)",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -540,
+        -180
+      ],
+      "id": "55650597-2913-4ec7-b703-e09b906bbe64",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": "BA8316976F09268F%21129"
+      },
+      "type": "n8n-nodes-base.microsoftOneDrive",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -180
+      ],
+      "id": "ad1629aa-2213-48cc-bb35-6aa3e70b0f8d",
+      "name": "Microsoft OneDrive",
+      "credentials": {
+        "microsoftOneDriveOAuth2Api": {
+          "id": "1MkicmVIdGjjxWwS",
+          "name": "Microsoft Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "my-ai-agents",
+          "mode": "list",
+          "cachedResultName": "my-ai-agents"
+        },
+        "options": {
+          "pineconeNamespace": "tesla-data"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        -100,
+        -180
+      ],
+      "id": "9a3c44ac-0063-409c-ba96-7c32d4141d02",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "Dz9rRlmDZlJJbczg",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/embedding-001"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -220,
+        20
+      ],
+      "id": "0d04a0d4-634b-4c6a-83dd-9d5eb3a814e2",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tnVLhc88OJn6kQnB",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        40,
+        40
+      ],
+      "id": "777cf329-d367-4fcd-8f12-2bdc96ece8c7",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        40,
+        200
+      ],
+      "id": "f2ef4d9d-d0aa-47bf-a4f6-2d9c9626d19d",
+      "name": "Recursive Character Text Splitter"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Microsoft OneDrive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Microsoft OneDrive": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b5803e30-72c9-4cdf-80b2-2a43f916d714",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f6cbacca4345ae0bcf21f68cb4da1b567d8558c24f7bddf4f6387cc059527aa4"
+  },
+  "id": "Nasrr73Ey5oKMqTM",
+  "tags": []
+}

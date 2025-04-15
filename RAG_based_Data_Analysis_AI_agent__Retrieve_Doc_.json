@@ -1,0 +1,187 @@
+{
+  "name": "RAG based Data Analysis AI agent (Retrieve Doc)",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -660,
+        -900
+      ],
+      "id": "df9a9a3e-9062-4f43-8510-fc2c9c95b40b",
+      "name": "When chat message received",
+      "webhookId": "cab47ac4-b39c-4dcd-a809-215fee59b23c"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -440,
+        -900
+      ],
+      "id": "bf0736a5-7913-4f4d-813c-3367eac262c2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -360,
+        -680
+      ],
+      "id": "1d9ab7cf-c623-4a35-850f-daf27a50e2a2",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "my_ai_agents",
+        "toolDescription": "Use this tool to get the data to answer the user's questions.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "my-ai-agents",
+          "mode": "list",
+          "cachedResultName": "my-ai-agents"
+        },
+        "options": {
+          "pineconeNamespace": "tesla-data"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        -160,
+        -760
+      ],
+      "id": "62667971-ff2a-46a2-8245-377015166518",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "Dz9rRlmDZlJJbczg",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/embedding-001"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -600
+      ],
+      "id": "8debec44-6ef2-4268-976a-e920c7396f14",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tnVLhc88OJn6kQnB",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "mistralai/mistral-small-3.1-24b-instruct:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -540,
+        -680
+      ],
+      "id": "e6b45993-27ba-41aa-8fd9-298f3a676b6c",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "RCXLUbS7m7xApJ90",
+          "name": "OpenRouter account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "98e0be0b-d104-4aaa-b924-1b7da85f58e0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f6cbacca4345ae0bcf21f68cb4da1b567d8558c24f7bddf4f6387cc059527aa4"
+  },
+  "id": "zuOK35uxMBPSXhBJ",
+  "tags": []
+}
